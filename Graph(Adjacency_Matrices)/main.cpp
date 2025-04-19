@@ -252,6 +252,81 @@ void testDFS() {
     std::cout << std::endl;
 }
 
+
+// 测试Kruskal最小生成树算法
+void testKruskalAlgorithm() {
+    printTestHeader("Kruskal最小生成树算法测试");
+    
+    // 创建一个无向图
+    char vertices[] = {'A', 'B', 'C', 'D', 'E', 'F'};
+    Graph<char, int> g(vertices, 6);
+    
+    // 添加边 - 使用经典的MST测试图
+    g.addEdge('A', 'B', 6);
+    g.addEdge('A', 'C', 1);
+    g.addEdge('A', 'D', 5);
+    g.addEdge('B', 'C', 5);
+    g.addEdge('B', 'E', 3);
+    g.addEdge('C', 'D', 5);
+    g.addEdge('C', 'E', 6);
+    g.addEdge('C', 'F', 4);
+    g.addEdge('D', 'F', 2);
+    g.addEdge('E', 'F', 6);
+    
+    std::cout << "原图结构:" << std::endl;
+    g.graphPrint();
+    
+    // 创建最小生成树
+    Graph<char, int> mst;
+    int totalWeight = g.kruskalAlgorithm(mst);
+    
+    std::cout << "\n最小生成树结构:" << std::endl;
+    mst.graphPrint();
+    
+    std::cout << "最小生成树总权重: " << totalWeight << std::endl;
+    
+    // 验证结果
+    int expectedWeight = 15;  // A-C(1) + D-F(2) + B-E(3) + C-F(4) + B-C(5) = 15
+    std::cout << "验证: " << (totalWeight == expectedWeight ? "正确" : "错误") << std::endl;
+}
+
+
+// 测试Prim最小生成树算法
+void testPrimAlgorithm() {
+    printTestHeader("Prim最小生成树算法测试");
+    
+    // 创建一个无向图 - 使用与Kruskal测试相同的图
+    char vertices[] = {'A', 'B', 'C', 'D', 'E', 'F'};
+    Graph<char, int> g(vertices, 6);
+    
+    g.addEdge('A', 'B', 6);
+    g.addEdge('A', 'C', 1);
+    g.addEdge('A', 'D', 5);
+    g.addEdge('B', 'C', 5);
+    g.addEdge('B', 'E', 3);
+    g.addEdge('C', 'D', 5);
+    g.addEdge('C', 'E', 6);
+    g.addEdge('C', 'F', 4);
+    g.addEdge('D', 'F', 2);
+    g.addEdge('E', 'F', 6);
+    
+    std::cout << "原图结构:" << std::endl;
+    g.graphPrint();
+    
+    // 创建最小生成树
+    Graph<char, int> mst;
+    int totalWeight = g.primAlgorithm(mst);
+    
+    std::cout << "\n最小生成树结构:" << std::endl;
+    mst.graphPrint();
+    
+    std::cout << "最小生成树总权重: " << totalWeight << std::endl;
+    
+    // 验证结果
+    int expectedWeight = 15; // 同Kruskal算法结果
+    std::cout << "验证: " << (totalWeight == expectedWeight ? "正确" : "错误") << std::endl;
+}
+
 int main() {
     // 设置控制台编码为UTF-8以显示中文
     SetConsoleOutputCP(65001);
@@ -266,6 +341,8 @@ int main() {
     testEmptyGraph();
     testBFS();
     testDFS();
+    testKruskalAlgorithm();
+    testPrimAlgorithm();
     
     std::cout << "\n所有测试完成!" << std::endl;
     return 0;

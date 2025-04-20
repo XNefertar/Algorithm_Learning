@@ -93,7 +93,7 @@ void testVectorConstruction() {
     g.graphPrint();
 }
 
-// 测试添加重复边（应该更新权重）
+// 测试添加重复边(应该更新权重)
 void testDuplicateEdges() {
     printTestHeader("重复边测试");
     
@@ -125,7 +125,7 @@ void testEmptyGraph() {
     Graph<int, int> g;
     std::cout << "空图构造成功" << std::endl;
     
-    // 尝试在空图上添加边（应该返回false）
+    // 尝试在空图上添加边(应该返回false)
     bool success = g.addEdge(1, 2, 10);
     std::cout << "尝试在空图上添加边1->2: " << (success ? "成功(不应该)" : "失败(正确)") << std::endl;
     
@@ -327,6 +327,109 @@ void testPrimAlgorithm() {
     std::cout << "验证: " << (totalWeight == expectedWeight ? "正确" : "错误") << std::endl;
 }
 
+
+void testDijkstraAlgorithm() {
+    printTestHeader("Dijkstra最短路径算法测试");
+    
+    // 创建有向图
+    char vertices[] = {'A', 'B', 'C', 'D', 'E', 'F'};
+    Graph<char, int, INT_MAX, true> g(vertices, 6);
+    
+    // 添加有向边
+    g.addEdge('A', 'B', 10);
+    g.addEdge('A', 'C', 3);
+    g.addEdge('B', 'D', 2);
+    g.addEdge('C', 'B', 4);
+    g.addEdge('C', 'D', 8);
+    g.addEdge('C', 'E', 2);
+    g.addEdge('D', 'E', 7);
+    g.addEdge('D', 'F', 4);
+    g.addEdge('E', 'F', 6);
+    
+    std::cout << "图结构:" << std::endl;
+    g.graphPrint();
+    
+    // 打印从A到各顶点的最短路径
+    g.printShortestPathDijkstra('A', 'D');  // 期望路径: A->C->B->D, 距离: 9
+    g.printShortestPathDijkstra('A', 'F');  // 期望路径: A->C->B->D->F, 距离: 13
+    
+    // 测试不可达的情况
+    g.printShortestPathDijkstra('F', 'A');  // 期望输出: 不存在路径
+}
+
+// 测试Bellman-Ford算法
+void testBellmanFordAlgorithm() {
+    printTestHeader("Bellman-Ford最短路径算法测试");
+    
+    // 测试1: 带负权边但无负权回路的有向图
+    std::cout << "测试1: 带负权边但无负权回路的有向图" << std::endl;
+    char vertices1[] = {'A', 'B', 'C', 'D', 'E'};
+    Graph<char, int, INT_MAX, true> g1(vertices1, 5);
+    
+    g1.addEdge('A', 'B', 6);
+    g1.addEdge('A', 'C', 7);
+    g1.addEdge('B', 'C', 8);
+    g1.addEdge('B', 'D', -4);  // 负权边
+    g1.addEdge('B', 'E', 5);
+    g1.addEdge('C', 'D', 9);
+    g1.addEdge('C', 'E', -3);  // 负权边
+    g1.addEdge('D', 'E', 7);
+    g1.addEdge('D', 'A', 2);
+    g1.addEdge('E', 'B', -2);  // 负权边
+    
+    std::cout << "图结构:" << std::endl;
+    g1.graphPrint();
+    
+    // 打印从A出发到各顶点的最短路径
+    std::cout << "A到各顶点的最短路径: " << std::endl;
+    g1.printShortestPathBellmanFord('A', 'A');  // 自身到自身
+    g1.printShortestPathBellmanFord('A', 'B');
+    g1.printShortestPathBellmanFord('A', 'C');
+    g1.printShortestPathBellmanFord('A', 'D');
+    g1.printShortestPathBellmanFord('A', 'E');
+    
+    // 测试2: 带负权回路的有向图
+    std::cout << "\n测试2: 带负权回路的有向图" << std::endl;
+    char vertices2[] = {'A', 'B', 'C', 'D'};
+    Graph<char, int, INT_MAX, true> g2(vertices2, 4);
+    
+    g2.addEdge('A', 'B', 1);
+    g2.addEdge('B', 'C', 2);
+    g2.addEdge('C', 'D', 3);
+    g2.addEdge('D', 'A', -7);  // 形成负权回路: A->B->C->D->A总权重为-1
+    
+    std::cout << "图结构:" << std::endl;
+    g2.graphPrint();
+    
+    // 尝试计算最短路径，应该检测到负权回路
+    g2.printShortestPathBellmanFord('A', 'C');
+    
+    // 测试3: 与Dijkstra算法比较(无负权边的图)
+    std::cout << "\n测试3: 与Dijkstra算法比较(无负权边的图)" << std::endl;
+    char vertices3[] = {'A', 'B', 'C', 'D', 'E', 'F'};
+    Graph<char, int, INT_MAX, true> g3(vertices3, 6);
+    
+    // 使用与Dijkstra测试相同的图
+    g3.addEdge('A', 'B', 10);
+    g3.addEdge('A', 'C', 3);
+    g3.addEdge('B', 'D', 2);
+    g3.addEdge('C', 'B', 4);
+    g3.addEdge('C', 'D', 8);
+    g3.addEdge('C', 'E', 2);
+    g3.addEdge('D', 'E', 7);
+    g3.addEdge('D', 'F', 4);
+    g3.addEdge('E', 'F', 6);
+    
+    std::cout << "图结构:" << std::endl;
+    g3.graphPrint();
+    
+    std::cout << "Dijkstra算法结果:" << std::endl;
+    g3.printShortestPathDijkstra('A', 'F');
+    
+    std::cout << "Bellman-Ford算法结果:" << std::endl;
+    g3.printShortestPathBellmanFord('A', 'F');
+}
+
 int main() {
     // 设置控制台编码为UTF-8以显示中文
     SetConsoleOutputCP(65001);
@@ -343,6 +446,8 @@ int main() {
     testDFS();
     testKruskalAlgorithm();
     testPrimAlgorithm();
+    testDijkstraAlgorithm();
+    testBellmanFordAlgorithm();
     
     std::cout << "\n所有测试完成!" << std::endl;
     return 0;

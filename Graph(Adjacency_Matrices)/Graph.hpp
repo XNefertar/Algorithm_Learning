@@ -75,10 +75,15 @@ public:
 
 public:
 
-    void DFS(const V& start);
+    void DFS(const V& start); 
     void BFS(const V& start);
     W kruskalAlgorithm(GraphSelf& minTree);
     W primAlgorithm(GraphSelf& minTree);
+    void dijkstraAlgorithm(const V& start, std::vector<W>& distance, std::vector<int>& path);
+    bool BellmanFordAlgorithm(const V& start, std::vector<W>& distance, std::vector<int>& path);
+    void printShortestPathDijkstra(const V& start, const V& end);
+    void printShortestPathBellmanFord(const V& start, const V& end);
+
     void graphPrint();
 };
 

@@ -201,7 +201,7 @@ W Graph<V, W, MAX_WEIGHT, Direction>::primAlgorithm(GraphSelf& minTree) {
 
     for(size_t i = 0; i < n; ++i){
         W minWeight = MAX_WEIGHT;
-        int u = -1;
+        size_t u = -1;
         
         // 找出最小权值
         for(size_t j = 0; j < n; ++j){
@@ -242,4 +242,171 @@ W Graph<V, W, MAX_WEIGHT, Direction>::primAlgorithm(GraphSelf& minTree) {
     }
 
     return totalWeight;
+}
+
+
+template<typename V, typename W, int MAX_WEIGHT, bool Direction>
+void Graph<V, W, MAX_WEIGHT, Direction>::dijkstraAlgorithm(const V& start, std::vector<W>& _distance, std::vector<int>& _path){
+    size_t n = _vertSet.size();
+    size_t startIndex = _getVertIndex(start);
+
+    if(startIndex == -1) {
+        std::cout << "起点不存在..." << std::endl;
+        return;
+    }
+
+    std::vector<bool> _isVisited(n, false);
+    _distance.resize(n, MAX_WEIGHT);
+    _path.resize(n, -1);
+
+    _distance[startIndex] = 0;
+
+    for(size_t i = 0; i < n; ++i){
+        size_t u = -1;
+        W minDist = MAX_WEIGHT;
+
+        for(size_t j = 0; j < n; ++j){
+            if(!_isVisited[j] && _distance[j] < minDist){
+                minDist = _distance[j];
+                u = j;
+            }
+        }
+
+        if(u == -1) break;
+
+        _isVisited[u] = true;
+        for(size_t v = 0; v < n; ++v){
+            if(!_isVisited[v] && _adjMatrix[u][v] != MAX_WEIGHT
+            && _distance[u] + _adjMatrix[u][v] < _distance[v]){
+                _distance[v] = _distance[u] + _adjMatrix[u][v];
+                _path[v] = u;
+            }
+        }
+
+    }
+}
+
+
+template<typename V, typename W, int MAX_WEIGHT, bool Direction>
+bool Graph<V, W, MAX_WEIGHT, Direction>::BellmanFordAlgorithm(const V& start, std::vector<W>& _distance, std::vector<int>& _path){
+    size_t n = _vertSet.size();
+    size_t startIndex = _getVertIndex(start);
+    if(startIndex == -1){
+        std::cout << "起点不存在..." << std::endl;
+        return false;
+    }
+
+    _distance.resize(n, MAX_WEIGHT);
+    _distance[startIndex] = W{};
+
+    _path.resize(n, -1);
+
+    for(size_t k = 1; k <= n; ++k){
+        bool update = false;
+        // std::cout << "更新第 " << k << " 轮: " << std::endl;
+        for(size_t i = 0; i < n; ++i){
+            for(size_t j = 0; j < n; ++j){
+                if(_adjMatrix[i][j] != MAX_WEIGHT && _distance[i] != MAX_WEIGHT && _adjMatrix[i][j] + _distance[i] < _distance[j]){
+                    _distance[j] = _adjMatrix[i][j] + _distance[i];
+                    update = true;
+                    _path[j] = i; 
+                }
+            }
+        }
+        if(!update){
+            break;
+        }
+    }
+
+    for(size_t i = 0; i < n; ++i){
+        for(size_t j = 0; j < n; ++j){
+            if(_adjMatrix[i][j] != MAX_WEIGHT && _distance[i] != MAX_WEIGHT && _adjMatrix[i][j] + _distance[i] < _distance[j]){
+                std::cout << "存在负权回路, 更新中断..." << std::endl;
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
+// 打印从起点到终点的最短路径
+template<typename V, typename W, int MAX_WEIGHT, bool Direction>
+void Graph<V, W, MAX_WEIGHT, Direction>::printShortestPathDijkstra(const V& start, const V& end) {
+    std::vector<W> distance;
+    std::vector<int> path;
+    
+    dijkstraAlgorithm(start, distance, path);
+    
+    size_t endIdx = _getVertIndex(end);
+    if(endIdx == -1) {
+        std::cout << "终点不存在!" << std::endl;
+        return;
+    }
+    
+    if(distance[endIdx] == MAX_WEIGHT) {
+        std::cout << "从 " << start << " 到 " << end << " 不存在路径!" << std::endl;
+        return;
+    }
+    
+    std::cout << "从 " << start << " 到 " << end << " 的最短距离为: " << distance[endIdx] << std::endl;
+    std::cout << "路径: ";
+    
+    // 重建路径
+    std::vector<V> shortestPath;
+    size_t current = endIdx;
+    
+    while(current != -1) {
+        shortestPath.push_back(_vertSet[current]);
+        current = path[current];
+    }
+    
+    // 反向输出路径
+    for(int i = shortestPath.size() - 1; i >= 0; --i) {
+        std::cout << shortestPath[i];
+        if(i > 0) std::cout << " -> ";
+    }
+    std::cout << std::endl;
+}
+
+
+// 打印从起点到终点的最短路径
+template<typename V, typename W, int MAX_WEIGHT, bool Direction>
+void Graph<V, W, MAX_WEIGHT, Direction>::printShortestPathBellmanFord(const V& start, const V& end) {
+    std::vector<W> distance;
+    std::vector<int> path;
+    
+    if (!BellmanFordAlgorithm(start, distance, path)) {
+        return;
+    }
+    
+    size_t endIdx = _getVertIndex(end);
+    if(endIdx == -1) {
+        std::cout << "终点不存在!" << std::endl;
+        return;
+    }
+    
+    if(distance[endIdx] == MAX_WEIGHT) {
+        std::cout << "从 " << start << " 到 " << end << " 不存在路径!" << std::endl;
+        return;
+    }
+    
+    std::cout << "从 " << start << " 到 " << end << " 的最短距离为: " << distance[endIdx] << std::endl;
+    std::cout << "路径: ";
+    
+    // 重建路径
+    std::vector<V> shortestPath;
+    size_t current = endIdx;
+    
+    while(current != -1) {
+        shortestPath.push_back(_vertSet[current]);
+        current = path[current];
+    }
+    
+    // 反向输出路径
+    for(int i = shortestPath.size() - 1; i >= 0; --i) {
+        std::cout << shortestPath[i];
+        if(i > 0) std::cout << " -> ";
+    }
+    std::cout << std::endl;
 }

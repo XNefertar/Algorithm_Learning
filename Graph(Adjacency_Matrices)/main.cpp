@@ -278,7 +278,7 @@ void testKruskalAlgorithm() {
     
     // 创建最小生成树
     Graph<char, int> mst;
-    int totalWeight = g.kruskalAlgorithm(mst);
+    int totalWeight = g.KruskalAlgorithm(mst);
     
     std::cout << "\n最小生成树结构:" << std::endl;
     mst.graphPrint();
@@ -315,7 +315,7 @@ void testPrimAlgorithm() {
     
     // 创建最小生成树
     Graph<char, int> mst;
-    int totalWeight = g.primAlgorithm(mst);
+    int totalWeight = g.PrimAlgorithm(mst);
     
     std::cout << "\n最小生成树结构:" << std::endl;
     mst.graphPrint();
@@ -430,6 +430,77 @@ void testBellmanFordAlgorithm() {
     g3.printShortestPathBellmanFord('A', 'F');
 }
 
+
+void testFloydWarshallAlgorithm() {
+    printTestHeader("Floyd-Warshall最短路径算法测试");
+    
+    // 测试1: 基本有向图
+    std::cout << "\n测试1: 基本有向图" << std::endl;
+    char vertices1[] = {'A', 'B', 'C', 'D'};
+    Graph<char, int, INT_MAX, true> g1(vertices1, 4);
+    
+    g1.addEdge('A', 'B', 5);
+    g1.addEdge('A', 'C', 3);
+    g1.addEdge('B', 'C', 2);
+    g1.addEdge('B', 'D', 1);
+    g1.addEdge('C', 'D', 6);
+    
+    std::cout << "图结构:" << std::endl;
+    g1.graphPrint();
+    
+    // 打印所有点对最短路径
+    g1.printShortestPathFloydWarshall('A', 'D');  // 期望: A->B->D, 距离6
+    g1.printShortestPathFloydWarshall('A', 'C');  // 期望: A->C, 距离3
+    g1.printShortestPathFloydWarshall('C', 'B');  // 期望: 不存在路径
+    
+    // 测试2: 带负权边的图
+    std::cout << "\n测试2: 带负权边的图" << std::endl;
+    char vertices2[] = {'A', 'B', 'C', 'D', 'E'};
+    Graph<char, int, INT_MAX, true> g2(vertices2, 5);
+    
+    g2.addEdge('A', 'B', 3);
+    g2.addEdge('A', 'C', 8);
+    g2.addEdge('A', 'E', -4);
+    g2.addEdge('B', 'D', 1);
+    g2.addEdge('B', 'E', 7);
+    g2.addEdge('C', 'B', 4);
+    g2.addEdge('D', 'C', -5);
+    g2.addEdge('D', 'A', 2);
+    g2.addEdge('E', 'D', 6);
+    
+    std::cout << "图结构:" << std::endl;
+    g2.graphPrint();
+    
+    g2.printShortestPathFloydWarshall('A', 'C');  // 期望: A->E->D->C, 距离-3
+    g2.printShortestPathFloydWarshall('B', 'A');  // 期望: B->D->A, 距离3
+    g2.printShortestPathFloydWarshall('E', 'B');  // 期望: E->D->C->B, 距离5
+    
+    // 测试3: 与其他算法比较
+    std::cout << "\n测试3: 与Dijkstra算法比较" << std::endl;
+    char vertices3[] = {'A', 'B', 'C', 'D', 'E', 'F'};
+    Graph<char, int, INT_MAX, true> g3(vertices3, 6);
+    
+    // 使用与Dijkstra测试相同的图
+    g3.addEdge('A', 'B', 10);
+    g3.addEdge('A', 'C', 3);
+    g3.addEdge('B', 'D', 2);
+    g3.addEdge('C', 'B', 4);
+    g3.addEdge('C', 'D', 8);
+    g3.addEdge('C', 'E', 2);
+    g3.addEdge('D', 'E', 7);
+    g3.addEdge('D', 'F', 4);
+    g3.addEdge('E', 'F', 6);
+    
+    std::cout << "图结构:" << std::endl;
+    g3.graphPrint();
+    
+    std::cout << "Dijkstra算法结果:" << std::endl;
+    g3.printShortestPathDijkstra('A', 'F');
+    
+    std::cout << "Floyd-Warshall算法结果:" << std::endl;
+    g3.printShortestPathFloydWarshall('A', 'F');
+}
+
 int main() {
     // 设置控制台编码为UTF-8以显示中文
     SetConsoleOutputCP(65001);
@@ -448,6 +519,7 @@ int main() {
     testPrimAlgorithm();
     testDijkstraAlgorithm();
     testBellmanFordAlgorithm();
+    testFloydWarshallAlgorithm();
     
     std::cout << "\n所有测试完成!" << std::endl;
     return 0;

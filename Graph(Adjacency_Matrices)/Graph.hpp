@@ -61,8 +61,10 @@ private:
         
         if(root1 != root2){
             if(std::abs(_unionIndex[root1]) > std::abs(_unionIndex[root2])){
+                _unionIndex[root1] += _unionIndex[root2];
                 _unionIndex[root2] = root1;
             } else {
+                _unionIndex[root2] += _unionIndex[root1];
                 _unionIndex[root1] = root2;
             }
         }
@@ -77,13 +79,14 @@ public:
 
     void DFS(const V& start); 
     void BFS(const V& start);
-    W kruskalAlgorithm(GraphSelf& minTree);
-    W primAlgorithm(GraphSelf& minTree);
-    void dijkstraAlgorithm(const V& start, std::vector<W>& distance, std::vector<int>& path);
+    W KruskalAlgorithm(GraphSelf& minTree);
+    W PrimAlgorithm(GraphSelf& minTree);
+    void DijkstraAlgorithm(const V& start, std::vector<W>& distance, std::vector<int>& path);
     bool BellmanFordAlgorithm(const V& start, std::vector<W>& distance, std::vector<int>& path);
+    void FloydWarshallAlgorithm(std::vector<std::vector<W>>& distance, std::vector<std::vector<int>>& path);
     void printShortestPathDijkstra(const V& start, const V& end);
     void printShortestPathBellmanFord(const V& start, const V& end);
-
+    void printShortestPathFloydWarshall(const V& start, const V& end);
     void graphPrint();
 };
 
